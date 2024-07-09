@@ -25,10 +25,10 @@ export default defineSchema({
     .searchIndex('search_title',{searchField: 'podcastTitle'})
     .searchIndex('search_body',{searchField: 'podcastDescription'}),
 
-    // users:defineTable({
-    //     email: v.string(),
-    //     imageUrl: v.string(),
-    //     clerkId: v.string(),
-    //     name: v.string(),
-    // })
+    users:defineTable({
+        email: v.string(),
+        imageUrl: v.string(),
+        clerkId: v.string(),
+        name: v.string(),
+    })
 })
