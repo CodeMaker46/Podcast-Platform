@@ -18,3 +18,4 @@ const ConvexClerkProvider = ({children } : {children : ReactNode}) => (
 );
 
 export default ConvexClerkProvider;
+

@@ -21,7 +21,7 @@ const Home = () => {
         <h1 className='text-20 font-bold text-white-1'>Trending Podcasts</h1>
 
         <div className="flex min-h-screen flex-col items-center justify-between p-24 text-white-1">
-          {tasks?.map(({ _id, text }) => <div key={_id}>{text}</div>)}
+          {tasks?.map(({ _id,text}) => <div key={_id}>{text}</div>)}
         </div>
 
         <div className='podcast_grid'>
