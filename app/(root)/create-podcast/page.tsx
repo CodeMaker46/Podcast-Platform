@@ -30,25 +30,42 @@ import { useState } from "react"
 import { Textarea } from "@/components/ui/textarea"
 import GeneratePodcast from "@/components/GeneratePodcast"
 import GenerateThumbnail from "@/components/GenerateThumbnail"
+import { Loader } from "lucide-react"
+import { Id } from "@/convex/_generated/dataModel"
 
 
 const voiceCategories = ['Alloy','Shimer','Nova','Echo','Fable','Onyx']
 
 const formSchema = z.object({
-  username: z.string().min(2, {
-    message: "Username must be at least 2 characters.",
+  podcastTitle: z.string().min(2, {
+    message: "PodcastTitle must be at least 2 characters.",
+  }),
+  podcastDescription: z.string().min(2, {
+    message: "PodcastDescription must be at least 2 characters.",
   }),
 })
 
 const CreatePodcast = () => {
 
+  const [imagePrompt, setImagePrompt] = useState('')
+  const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null >(null)
+  const [imageUr, setImageUr] = useState('')
+  
+  const [audioStorageId, setAudioStorageId] = useState<Id<"_storage"> | null >(null)
+  const [audioUrl, setAudioUrl] = useState('')
+  const [audioDuration, setAudioDuration] = useState(0)
+  
+  const [voicePrompt, setVoicePrompt] = useState('')
   const [voiceType,setVoiceType] = useState<string|null>(null)
+  
+  const [isSubmitting, setisSubmitting] = useState(false);
 
    // 1. Define your form.
    const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      podcastTitle: "",
+      podcastDescription: ""
     },
   })
  
@@ -133,9 +150,29 @@ const CreatePodcast = () => {
         </div>
 
         <div className="flex flex-col pt-10">
-            <GeneratePodcast/>
+            <GeneratePodcast
+              setAudioStorageId = {setAudioStorageId}
+              setAudio  = {setAudioUrl}
+              voiceType = {voiceType}
+              audio = {audioUrl}
+              voicePrompt = {voicePrompt}
+              setVoicePromt = {setVoicePrompt}
+              setAudioDuration = {setAudioDuration}
+            />
 
             <GenerateThumbnail/>
+
+            <div className="m-10 w-full">
+                <Button type="submit" className=" text-16 w-full bg-orange-1 py-4 font-extrabold text-white-1
+                transition-all duration-500 hover:bg-black-1">
+                  {isSubmitting ? (
+                    <>
+                      Submitting
+                      <Loader size={20} className="animate-spin ml-2"/>
+                    </>
+                  ): ('Submit & Publish Podcast')}
+                </Button>
+            </div>
 
         </div>
 
