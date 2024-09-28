@@ -55,7 +55,7 @@ const CreatePodcast = () => {
   const [audioUrl, setAudioUrl] = useState('')
   const [audioDuration, setAudioDuration] = useState(0)
   
-  const [voicePrompt, setVoicePrompt] = useState('')
+  const [voicePrompt, setVoicePrompt] = useState('');
   const [voiceType,setVoiceType] = useState<string|null>(null)
   
   const [isSubmitting, setisSubmitting] = useState(false);
@@ -90,7 +90,7 @@ const CreatePodcast = () => {
             name="podcastTitle"
             render={({ field }) => (
               <FormItem className="flex flex-col gap-2.5">
-                <FormLabel className="text-16 font-bold text-white-1">Username</FormLabel>
+                <FormLabel className="text-16 font-bold text-white-1">Title</FormLabel>
                 <FormControl>
                   <Input className="input-class focus-visible:ring-orange-1" placeholder="podcast  " {...field} />
                 </FormControl>
@@ -106,9 +106,10 @@ const CreatePodcast = () => {
 
             <Select onValueChange={(value)=>setVoiceType(value)}>
 
-            <SelectTrigger className={cn('text-16 w-full border-none bg-black-1 text-gray-1')}>
-              <SelectValue placeholder="Select AI voice" className="placeholder:text-gray-1"/>
+            <SelectTrigger className={cn('text-16 w-full border-none bg-black-1 text-gray-1  focus:ring-orange-1')}>
+              <SelectValue placeholder="Select AI voice" className="placeholder:text-gray-1 "/>
             </SelectTrigger>
+
             <SelectContent className="text-16 border-none font-bold text-white-1 focus:ring-orange-1">
               {voiceCategories.map((category)=>(
                 <SelectItem key = {category} value= {category} className="capitalize focus:bg-orange-1">
@@ -156,7 +157,7 @@ const CreatePodcast = () => {
               voiceType = {voiceType}
               audio = {audioUrl}
               voicePrompt = {voicePrompt}
-              setVoicePromt = {setVoicePrompt}
+              setVoicePrompt = {setVoicePrompt}
               setAudioDuration = {setAudioDuration}
             />
 
