@@ -51,6 +51,7 @@ const useGeneratePodcast = ({
 
     try {
       const response = await getPodcastAudio({
+
         voice: voiceType,
         input: voicePrompt
       })
