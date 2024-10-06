@@ -4,13 +4,36 @@ import { Label } from '@radix-ui/react-label'
 import { Textarea } from './ui/textarea'
 import { Button } from './ui/button'
 import { Loader } from 'lucide-react'
+import { useAction, useMutation } from 'convex/react'
+import { api } from '@/convex/_generated/api'
+import {v4 as uuidv4} from 'uuid';
+import { generateUploadUrl } from '@/convex/files'
+import {useUploadFiles} from '@xixixao/uploadstuff/react'
+// import { useToast } from '@/components/ui/use-toast'
+import { useToast } from "@/components/hooks/use-toast"
+
+
+
+
 
 const useGeneratePodcast = ({
   setAudio,voiceType,voicePrompt,setAudioStorageId
 }: GeneratePodcastProps) =>{
   // logic for podcast generation 
 
-  const [isGenerating, setIsGenerating] = useState(false)
+  const [isGenerating, setIsGenerating] = useState(false);
+  const { toast } = useToast()
+
+  const generateUploadUrl = useMutation(api.files.generateUploadUrl);
+  const { startUpload } = useUploadFiles(generateUploadUrl)
+
+  const getPodcastAudio = useAction(api.openai.generateAudioAction)
+
+  const getAudioUrl = useMutation(api.podcasts.getUrl);
+  
+
+
+
 
   const generatePodcast = async ()=> {
     setIsGenerating(true)
@@ -18,24 +41,44 @@ const useGeneratePodcast = ({
     setAudio('')
 
     if(!voicePrompt){
-      // todo : show error message
+      toast({
+        title: "Please provide a voiceType to generate a podcast.",
+      })
       return setIsGenerating(false);
     }
 
     // if voicPrompt is open
 
     try {
-      // pseudo code
-      // const response = await getPodcastAudio({
-      //   voice: voiceType,
-      //   voicePrompt : voicePrompt
-      // })
-      
+      const response = await getPodcastAudio({
+        voice: voiceType,
+        input: voicePrompt
+      })
+
+      const blob = new Blob([response], { type: 'audio/mpeg' });
+      const fileName = `podcast-${uuidv4()}.mp3`;
+      const file = new File([blob], fileName, { type: 'audio/mpeg' });
+
+      const uploaded = await startUpload([file]);
+      const storageId = (uploaded[0].response as any).storageId;
+
+      setAudioStorageId(storageId);
+
+      const audioUrl = await getAudioUrl({ storageId });
+      setAudio(audioUrl!);
+      setIsGenerating(false);
+      toast({
+        title: "Podcast generated successfully",
+      })
     } catch (error) {
-      console.log("Error in generating podcast", error)
-      // todo : show error message 
-      setIsGenerating(false)
+      console.log('Error generating podcast', error)
+      toast({
+        title: "Error creating a podcast",
+        variant: 'destructive',
+      })
+      setIsGenerating(false);
     }
+    
   }
   
   return {
@@ -75,7 +118,7 @@ const GeneratePodcast = (props : GeneratePodcastProps) => {
 
       <div className='mt-5 w-full max-w-[200px]'>
         <Button type="submit" className=" text-16  bg-orange-1 py-4 font-bold text-white-1
-          transition-all duration-500 hover:bg-black-1">
+          transition-all duration-500 hover:bg-black-1" onClick={generatePodcast}>
             {isGenerating ? (
               <>
                 Generating
